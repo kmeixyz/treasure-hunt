@@ -6,7 +6,7 @@ import Door from './Door';
 import FeedbackPanel from './FeedbackPanel';
 import ClueHistory from './ClueHistory';
 import { getLevel } from '@/lib/levels';
-import { computeFeedback, chooseTreasureIndex } from '@/lib/gameLogic';
+import { computeFeedback, chooseTreasureIndex, relocateTreasureIfNeeded } from '@/lib/gameLogic';
 
 // State shape:
 //   level:           the active level config
@@ -34,7 +34,11 @@ function reducer(state, action) {
       const { doorIndex } = action;
       if (state.tried[doorIndex]) return state; // already tried; ignore
 
-      const feedback = computeFeedback(state.level, doorIndex, state.treasureIndex);
+      const triedSet = new Set(Object.keys(state.tried).map(Number));
+      const treasureIndex = relocateTreasureIfNeeded(
+        state.level, doorIndex, state.treasureIndex, triedSet, state.attempts.length
+      );
+      const feedback = computeFeedback(state.level, doorIndex, treasureIndex);
       const attempt = { doorIndex, feedback };
       const attempts = [...state.attempts, attempt];
       const tried = { ...state.tried, [doorIndex]: attempt };
@@ -43,7 +47,7 @@ function reducer(state, action) {
       if (feedback.kind === 'found') status = 'won';
       else if (state.level.moveLimit && attempts.length >= state.level.moveLimit) status = 'lost';
 
-      return { ...state, attempts, tried, lastFeedback: feedback, status };
+      return { ...state, treasureIndex, attempts, tried, lastFeedback: feedback, status };
     }
     case 'RESET':
       return init({ level: state.level });
