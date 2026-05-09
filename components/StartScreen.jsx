@@ -14,7 +14,9 @@ function Stars({ count, max = 3 }) {
   );
 }
 
-export default function StartScreen({ onStart, progress }) {
+export default function StartScreen({ onStart, progress, onLevel6 }) {
+  const level5Done = (progress[5] || 0) > 0;
+
   return (
     <div className="start">
       <div className="start__eyebrow">~ a tiny adventure ~</div>
@@ -36,8 +38,6 @@ export default function StartScreen({ onStart, progress }) {
       <div className="level-grid">
         {LEVELS.map((level, i) => {
           const earned = progress[level.id] || 0;
-          // Levels unlock as you complete previous ones — but level 1 is always open
-          // and replaying any unlocked level is allowed.
           const previous = i === 0 ? 3 : (progress[LEVELS[i - 1].id] || 0);
           const locked = i > 0 && previous === 0;
           return (
@@ -57,6 +57,21 @@ export default function StartScreen({ onStart, progress }) {
             </button>
           );
         })}
+
+        {/* Level 6 — Maker Mode, unlocked after Level 5 */}
+        <button
+          className={'level-card level-card--maker' + (level5Done ? '' : ' level-card--maker-locked')}
+          disabled={!level5Done}
+          onClick={() => level5Done && onLevel6()}
+          aria-label="Level 6: Maker Mode"
+        >
+          <div className="level-card__num">LEVEL 6</div>
+          <div className="level-card__name">Maker Mode</div>
+          <div className="level-card__sub">Build your own maze or join a friend's.</div>
+          {level5Done
+            ? <div className="level-card__lock" aria-label="Unlocked" style={{ fontSize: '1.2rem' }}>✏️</div>
+            : <div className="level-card__lock" aria-label="Locked">🔒</div>}
+        </button>
       </div>
     </div>
   );

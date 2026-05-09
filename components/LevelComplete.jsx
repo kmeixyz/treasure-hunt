@@ -76,10 +76,11 @@ function Path({ attempts, treasureIndex, doorCount }) {
   );
 }
 
-export default function LevelComplete({ result, hasNext, onNext, onReplay, onMenu }) {
+export default function LevelComplete({ result, hasNext, isCustom, onNext, onReplay, onMenu }) {
   const { level, attempts, treasureIndex, status, stars } = result;
   const [picked, setPicked] = useState(null);
-  const reflection = REFLECTIONS[level.id];
+  // Custom levels have no reflection prompt.
+  const reflection = isCustom ? null : REFLECTIONS[level.id];
 
   const won = status === 'won';
 
@@ -90,6 +91,12 @@ export default function LevelComplete({ result, hasNext, onNext, onReplay, onMen
       <Stars count={stars} />
 
       <div className="summary">
+        {isCustom && level.code && (
+          <div className="summary__row">
+            <span>Room code</span>
+            <strong style={{ fontFamily: 'Caveat, cursive', fontSize: '1.3rem', letterSpacing: 1 }}>{level.code}</strong>
+          </div>
+        )}
         <div className="summary__row">
           <span>Moves used</span>
           <strong>{attempts.length}</strong>
@@ -135,10 +142,10 @@ export default function LevelComplete({ result, hasNext, onNext, onReplay, onMen
       <div className="complete__actions">
         <button className="btn btn--ghost" onClick={onMenu}>Menu</button>
         <button className="btn btn--ghost" onClick={onReplay}>Try Again</button>
-        {won && hasNext && (
+        {!isCustom && won && hasNext && (
           <button className="btn btn--gold" onClick={onNext}>Next Level →</button>
         )}
-        {won && !hasNext && (
+        {!isCustom && won && !hasNext && (
           <button className="btn btn--gold" onClick={onNext}>See Final Screen →</button>
         )}
       </div>

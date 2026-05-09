@@ -1,8 +1,7 @@
 'use client';
 
-// The big banner above the doors that responds to each pick.
-// Renders a different micro-layout per feedback kind so the message
-// is *visual*, not just a sentence to read.
+import { TEMPERATURE_LEVELS } from '@/lib/gameLogic';
+
 export default function FeedbackPanel({ feedback, level }) {
   if (!feedback) {
     return (
@@ -12,6 +11,7 @@ export default function FeedbackPanel({ feedback, level }) {
           <div className="feedback__label">Pick a door to begin.</div>
           <div className="feedback__detail">{level.intro}</div>
         </div>
+        {level.feedbackType === 'distance' && <TempLegend doorCount={level.doorCount} />}
       </div>
     );
   }
@@ -57,6 +57,38 @@ export default function FeedbackPanel({ feedback, level }) {
           {feedback.kind === 'empty' && 'Just dust and cobwebs in this one.'}
         </div>
       </div>
+      {level.feedbackType === 'distance' && <TempLegend doorCount={level.doorCount} activeTempKey={feedback.key} />}
+    </div>
+  );
+}
+
+// Horizontal temperature scale legend for distance-based levels.
+function TempLegend({ doorCount, activeTempKey }) {
+  // Compute which temperature labels actually appear for this door count.
+  const maxDist = doorCount - 1;
+  const seen = new Set();
+  for (let d = 1; d <= maxDist; d++) {
+    const ratio = d / maxDist;
+    for (let i = 1; i < TEMPERATURE_LEVELS.length; i++) {
+      if (ratio <= TEMPERATURE_LEVELS[i].threshold) {
+        seen.add(TEMPERATURE_LEVELS[i].key);
+        break;
+      }
+    }
+  }
+  const tiers = TEMPERATURE_LEVELS.slice(1).filter(t => seen.has(t.key));
+
+  return (
+    <div className="temp-legend">
+      {tiers.map(t => (
+        <span
+          key={t.key}
+          className={'temp-legend__tier' + (activeTempKey === t.key ? ' temp-legend__tier--active' : '')}
+          style={{ '--tier-color': t.color }}
+        >
+          {t.emoji} {t.label}
+        </span>
+      ))}
     </div>
   );
 }

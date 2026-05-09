@@ -1,9 +1,6 @@
 'use client';
 
-// A single door. When tried, it changes color based on the feedback received.
-// We keep the door's background color in CSS via a custom property so we can
-// theme it with whatever the feedback color is (blue for cold, red for hot, etc).
-export default function Door({ index, displayNumber, attempt, disabled, onOpen }) {
+export default function Door({ index, displayNumber, attempt, disabled, eliminated, isReveal, onOpen }) {
   const isTried = !!attempt;
   const isFound = attempt?.feedback?.kind === 'found';
 
@@ -11,7 +8,6 @@ export default function Door({ index, displayNumber, attempt, disabled, onOpen }
     ? { '--door-tried-color': attempt.feedback.color || '#94A3B8' }
     : undefined;
 
-  // What badge label do we show under each tried door?
   let badgeText = '';
   if (attempt) {
     if (attempt.feedback.kind === 'found') badgeText = 'TREASURE!';
@@ -22,22 +18,35 @@ export default function Door({ index, displayNumber, attempt, disabled, onOpen }
   }
 
   return (
-    <div className="door-wrap">
+    <div className={
+      'door-wrap' +
+      (eliminated ? ' door-wrap--eliminated' : '') +
+      (isReveal ? ' door-wrap--reveal' : '')
+    }>
       <button
         className={
           'door' +
           (isTried ? ' door--tried' : '') +
-          (isFound ? ' door--found' : '')
+          (isFound ? ' door--found' : '') +
+          (isReveal ? ' door--reveal' : '')
         }
         style={style}
-        disabled={disabled || isTried}
+        disabled={disabled || isTried || eliminated}
         onClick={() => onOpen(index)}
-        aria-label={`Door ${displayNumber}` + (isTried ? `, ${badgeText || 'already tried'}` : '')}
+        aria-label={
+          isReveal
+            ? `Door ${displayNumber} — treasure was here!`
+            : `Door ${displayNumber}` + (isTried ? `, ${badgeText || 'already tried'}` : '') +
+              (eliminated ? ', eliminated' : '')
+        }
       >
         {isTried && (
           <span className="door__overlay" aria-hidden="true">
             {attempt.feedback.emoji || '✕'}
           </span>
+        )}
+        {isReveal && !isTried && (
+          <span className="door__overlay" aria-hidden="true">💎</span>
         )}
       </button>
       <span className="door__num">{displayNumber}</span>

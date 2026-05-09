@@ -681,6 +681,541 @@ h1, h2, h3 { font-family: 'Lilita One', sans-serif; font-weight: 400; letter-spa
   line-height: 1.3;
 }
 
+/* Level 6 card — special maker card in the level grid */
+.level-card--maker {
+  border-style: dashed;
+  border-color: var(--teal);
+  background: linear-gradient(135deg, #FFF8EC 60%, rgba(42,157,143,0.08));
+}
+.level-card--maker .level-card__num { color: var(--teal-deep); }
+.level-card--maker-locked {
+  border-color: rgba(27,27,58,0.2);
+  background: var(--paper-dark);
+}
+
+/* ==========================================================================
+   Level 6 choice screen
+   ========================================================================== */
+.choice {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0 40px;
+}
+.choice__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+  max-width: 560px;
+  margin: 0 auto;
+  width: 100%;
+}
+.choice__eyebrow {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  color: var(--teal-deep);
+  transform: rotate(-2deg);
+}
+.choice__title {
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  color: var(--ink);
+  text-shadow: 4px 4px 0 var(--gold);
+}
+.choice__sub {
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  max-width: 400px;
+}
+.choice__cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+.choice__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+  background: #FFF8EC;
+  border: 3px solid var(--ink);
+  border-radius: 22px;
+  padding: 24px 28px;
+  text-align: center;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+  box-shadow: var(--shadow-deep);
+}
+.choice__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 0 rgba(27,27,58,0.18), 0 16px 32px rgba(27,27,58,0.1);
+}
+.choice__card-emoji { font-size: 3rem; }
+.choice__card-label {
+  font-family: 'Lilita One', sans-serif;
+  font-size: 1.5rem;
+  color: var(--ink);
+}
+.choice__card-desc {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+  max-width: 300px;
+}
+.choice__divider {
+  font-family: 'Caveat', cursive;
+  font-size: 1.4rem;
+  color: var(--ink-soft);
+  padding: 10px 0;
+}
+
+/* ==========================================================================
+   Maker wizard
+   ========================================================================== */
+.maker {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0 40px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+.maker__header {
+  text-align: center;
+}
+.maker__title {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.maker__steps {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.maker__step-pip {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Lilita One', sans-serif;
+  font-size: 0.9rem;
+  background: var(--paper-dark);
+  color: var(--ink-soft);
+  border: 2px solid rgba(27,27,58,0.15);
+  transition: background 200ms, color 200ms, border-color 200ms;
+}
+.maker__step-pip--active {
+  background: var(--coral);
+  color: #FFF8EC;
+  border-color: var(--coral-deep);
+}
+.maker__step-pip--done {
+  background: var(--teal);
+  color: #FFF8EC;
+  border-color: var(--teal-deep);
+}
+.maker__step-label {
+  font-family: 'Lilita One', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  color: var(--coral-deep);
+  text-transform: uppercase;
+}
+.maker__step-body {
+  background: #FFF8EC;
+  border: 3px solid var(--ink);
+  border-radius: 22px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-deep);
+}
+.maker__hint {
+  font-family: 'Lilita One', sans-serif;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+.maker__label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* Slider */
+.maker__slider-wrap { display: flex; flex-direction: column; gap: 4px; }
+.maker__slider {
+  width: 100%;
+  accent-color: var(--coral);
+  cursor: pointer;
+  height: 6px;
+}
+.maker__slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* Number inputs */
+.maker__exact-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.maker__exact-row--indented { padding-left: 28px; }
+.maker__number-input {
+  font-family: 'Lilita One', sans-serif;
+  font-size: 1.2rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  padding: 6px 12px;
+  width: 110px;
+  text-align: center;
+}
+.maker__number-input:focus { outline: none; border-color: var(--coral); }
+.maker__number-input--error { border-color: var(--coral-deep); background: rgba(200,75,39,0.06); }
+.maker__field-error {
+  color: var(--coral-deep);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* Math hint callout */
+.maker__math-hint {
+  background: rgba(42, 157, 143, 0.1);
+  border-left: 4px solid var(--teal);
+  border-radius: 0 10px 10px 0;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.maker__math-warn { color: var(--coral-deep); }
+
+/* Radio options */
+.maker__radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: border-color 120ms, background 120ms;
+}
+.maker__radio:has(input:checked) {
+  background: rgba(231, 111, 81, 0.08);
+  border-color: var(--coral);
+}
+.maker__radio input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--coral);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.maker__radio-label { font-size: 0.95rem; line-height: 1.4; color: var(--ink); }
+.maker__badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--teal);
+  color: #FFF8EC;
+  border-radius: 999px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Clue selector cards */
+.maker__clue-list { display: flex; flex-direction: column; gap: 10px; }
+.maker__clue-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  background: var(--paper);
+  border: 2px solid rgba(27,27,58,0.15);
+  border-radius: 14px;
+  padding: 12px 16px;
+  transition: border-color 120ms, background 120ms, transform 120ms;
+}
+.maker__clue-card:hover { border-color: var(--ink); transform: translateY(-1px); }
+.maker__clue-card--active {
+  background: rgba(231, 111, 81, 0.08);
+  border-color: var(--coral);
+}
+.maker__clue-emoji { font-size: 1.8rem; flex-shrink: 0; }
+.maker__clue-label {
+  font-family: 'Lilita One', sans-serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+  display: block;
+}
+.maker__clue-desc { font-size: 0.82rem; color: var(--ink-soft); margin-top: 2px; display: block; }
+
+/* Done step */
+.maker__done { align-items: center; text-align: center; }
+.maker__code-box {
+  background: var(--ink);
+  border-radius: 18px;
+  padding: 20px 36px;
+  margin: 8px 0;
+  box-shadow: 0 6px 0 rgba(27,27,58,0.3);
+}
+.maker__code-text {
+  font-family: 'Lilita One', sans-serif;
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  color: var(--gold);
+  letter-spacing: 3px;
+  word-break: break-all;
+}
+.maker__done-sub {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  max-width: 380px;
+  line-height: 1.5;
+}
+.maker__done-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* Nav row */
+.maker__nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   Join flow
+   ========================================================================== */
+.join {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0 40px;
+}
+.join__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+.join__emoji { font-size: 4rem; animation: bobble 2s ease-in-out infinite; }
+.join__title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  color: var(--ink);
+}
+.join__sub {
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 380px;
+}
+.join__input {
+  font-family: 'Lilita One', sans-serif;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  letter-spacing: 3px;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: #FFF8EC;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 14px 24px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: var(--shadow-deep);
+  outline: none;
+  transition: border-color 160ms;
+}
+.join__input:focus { border-color: var(--coral); }
+.join__input--error { border-color: var(--coral-deep); }
+.join__input::placeholder { color: rgba(27,27,58,0.25); }
+.join__error {
+  color: var(--coral-deep);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.join__go { font-size: 1.2rem; padding: 16px 40px; }
+
+/* ==========================================================================
+   Search bracket — narrows as the player eliminates halves
+   ========================================================================== */
+.bracket {
+  margin-bottom: 14px;
+  background: #FFF8EC;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 10px 16px;
+  box-shadow: var(--shadow-soft);
+}
+.bracket__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.bracket__label {
+  font-family: 'Lilita One', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+.bracket__range {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+.bracket__count {
+  margin-left: auto;
+  font-family: 'Lilita One', sans-serif;
+  font-size: 0.9rem;
+  color: var(--teal-deep);
+  background: rgba(42, 157, 143, 0.12);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.bracket__track {
+  position: relative;
+  height: 10px;
+  background: var(--paper-dark);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bracket__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--teal);
+  border-radius: 999px;
+  transition: left 400ms ease, width 400ms ease;
+}
+
+/* ==========================================================================
+   Eliminated doors — faded out when direction clue rules them out
+   ========================================================================== */
+.door-wrap--eliminated {
+  opacity: 0.2;
+  transition: opacity 400ms ease, transform 400ms ease;
+  transform: scale(0.88);
+  pointer-events: none;
+}
+
+/* Reveal door — shown on loss to show where treasure was */
+.door--reveal {
+  background: var(--gold) !important;
+  box-shadow:
+    inset 0 0 0 3px var(--gold-deep),
+    0 5px 0 var(--gold-deep),
+    0 0 24px rgba(255, 182, 39, 0.6) !important;
+  animation: reveal-pulse 900ms ease infinite alternate;
+}
+.door-wrap--reveal .door__num {
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 700;
+}
+@keyframes reveal-pulse {
+  0%   { box-shadow: inset 0 0 0 3px var(--gold-deep), 0 5px 0 var(--gold-deep), 0 0 12px rgba(255,182,39,0.4); }
+  100% { box-shadow: inset 0 0 0 3px var(--gold-deep), 0 5px 0 var(--gold-deep), 0 0 36px rgba(255,182,39,0.9); }
+}
+
+/* ==========================================================================
+   Temperature legend — appears inside the feedback panel on Level 2
+   ========================================================================== */
+.temp-legend {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 2px dashed rgba(27,27,58,0.12);
+  width: 100%;
+}
+.temp-legend__tier {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(27,27,58,0.06);
+  color: var(--ink-soft);
+  transition: background 200ms, color 200ms, transform 200ms;
+}
+.temp-legend__tier--active {
+  background: var(--tier-color);
+  color: #FFF8EC;
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* ==========================================================================
+   Large hallway — compact grid for Level 5 (100 doors)
+   ========================================================================== */
+.hallway--large {
+  grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+  gap: 6px;
+  padding: 14px 10px 20px;
+}
+.hallway--large .door {
+  max-width: 54px;
+}
+.hallway--large .door__num {
+  font-size: 0.6rem;
+  padding: 1px 4px;
+}
+.hallway--large .door__badge {
+  font-size: 0.55rem;
+  padding: 1px 4px;
+  letter-spacing: 0;
+}
+
+/* Feedback panel needs to stack its children when a temp-legend is present */
+.feedback {
+  flex-wrap: wrap;
+}
+.feedback > .temp-legend {
+  flex-basis: 100%;
+}
+
 /* Responsive tweaks */
 @media (max-width: 540px) {
   .hud__title { font-size: 1.1rem; width: 100%; order: 3; }
