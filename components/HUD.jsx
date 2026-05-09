@@ -1,6 +1,6 @@
 'use client';
 
-export default function HUD({ level, moves, onBack }) {
+export default function HUD({ level, moves, onBack, onJournalOpen, journalCount }) {
   const remaining = level.moveLimit ? level.moveLimit - moves : null;
   const warn = remaining !== null && remaining <= 2;
 
@@ -9,7 +9,7 @@ export default function HUD({ level, moves, onBack }) {
       <button className="hud__back" onClick={onBack} aria-label="Back to menu">← Menu</button>
 
       <div className="hud__title">
-        <span>LEVEL {level.id}</span>{level.name}
+        <span>LEVEL {level.id === 'custom' ? '6' : level.id}</span>{level.name}
       </div>
 
       <div className="hud__stats">
@@ -22,6 +22,18 @@ export default function HUD({ level, moves, onBack }) {
             <div className="hud__stat-label">Left</div>
             <div className="hud__stat-value">{Math.max(0, remaining)}</div>
           </div>
+        )}
+        {onJournalOpen && (
+          <button
+            className="hud__journal-btn"
+            onClick={onJournalOpen}
+            aria-label={`Open strategy journal${journalCount ? ` (${journalCount} entries)` : ''}`}
+          >
+            📓
+            {journalCount > 0 && (
+              <span className="hud__journal-badge">{journalCount}</span>
+            )}
+          </button>
         )}
       </div>
     </div>

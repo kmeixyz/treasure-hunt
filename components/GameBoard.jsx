@@ -7,10 +7,9 @@ import FeedbackPanel from './FeedbackPanel';
 import ClueHistory from './ClueHistory';
 import SearchBracket from './SearchBracket';
 import { getLevel } from '@/lib/levels';
-import { computeFeedback, chooseTreasureIndex, relocateTreasureIfNeeded } from '@/lib/gameLogic';
+import { computeFeedback, chooseTreasureIndex, relocateTreasureIfNeeded, computeStarsAdvanced } from '@/lib/gameLogic';
 
 function init({ level }) {
-  // Custom levels may pin the treasure to a specific door; otherwise randomize.
   const treasureIndex =
     level.treasureOverride !== undefined && level.treasureOverride !== null
       ? level.treasureOverride
@@ -49,14 +48,10 @@ function reducer(state, action) {
       if (feedback.kind === 'found') status = 'won';
       else if (state.level.moveLimit && attempts.length >= state.level.moveLimit) status = 'lost';
 
-      // Narrow the search space after each direction clue.
       let searchBounds = state.searchBounds;
       if (searchBounds && feedback.kind === 'direction') {
-        if (feedback.key === 'right') {
-          searchBounds = { left: doorIndex + 1, right: searchBounds.right };
-        } else if (feedback.key === 'left') {
-          searchBounds = { left: searchBounds.left, right: doorIndex - 1 };
-        }
+        if (feedback.key === 'right') searchBounds = { left: doorIndex + 1, right: searchBounds.right };
+        else if (feedback.key === 'left') searchBounds = { left: searchBounds.left, right: doorIndex - 1 };
       }
 
       return { ...state, treasureIndex, attempts, tried, lastFeedback: feedback, status, searchBounds };
@@ -69,19 +64,20 @@ function reducer(state, action) {
 }
 
 // levelConfig overrides levelId — pass a full level object for custom mazes.
-export default function GameBoard({ levelId, levelConfig, onComplete, onBack }) {
+export default function GameBoard({ levelId, levelConfig, onComplete, onBack, onJournalOpen, journalCount }) {
   const level = levelConfig || getLevel(levelId);
   const [state, dispatch] = useReducer(reducer, { level }, init);
 
   useEffect(() => {
     if (state.status === 'won' || state.status === 'lost') {
+      const { stars } = computeStarsAdvanced(state.attempts, state.level, state.status);
       const t = setTimeout(() => {
         onComplete({
           level: state.level,
           attempts: state.attempts,
           treasureIndex: state.treasureIndex,
           status: state.status,
-          stars: computeStarsLocal(state),
+          stars,
         });
       }, state.status === 'won' ? 1100 : 1400);
       return () => clearTimeout(t);
@@ -89,12 +85,17 @@ export default function GameBoard({ levelId, levelConfig, onComplete, onBack }) 
   }, [state.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleOpen = (idx) => dispatch({ type: 'OPEN', doorIndex: idx });
-
   const isLarge = level.doorCount > 20;
 
   return (
     <>
-      <HUD level={level} moves={state.attempts.length} onBack={onBack} />
+      <HUD
+        level={level}
+        moves={state.attempts.length}
+        onBack={onBack}
+        onJournalOpen={onJournalOpen}
+        journalCount={journalCount}
+      />
 
       <FeedbackPanel feedback={state.lastFeedback} level={level} />
 
@@ -128,12 +129,4 @@ export default function GameBoard({ levelId, levelConfig, onComplete, onBack }) 
       <ClueHistory attempts={state.attempts} />
     </>
   );
-}
-
-function computeStarsLocal(state) {
-  const { attempts, status, level } = state;
-  if (status === 'lost') return 0;
-  if (attempts.length <= level.perfectMoves) return 3;
-  if (attempts.length <= level.optimalMoves) return 2;
-  return 1;
 }

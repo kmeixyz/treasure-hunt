@@ -1,51 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { computeStarsAdvanced } from '@/lib/gameLogic';
+import StrategyBuilder from './StrategyBuilder';
 
-// Reflection prompt depends on the level so the question matches what
-// they just learned. The "best" answer is gently highlighted *after* they
-// pick, never before — we want them to think first.
-const REFLECTIONS = {
-  1: {
-    q: 'Without clues, what was your strategy?',
-    options: [
-      { text: 'I just guessed randomly.',                   coach: "Yeah — without clues, every guess is a coin flip. Let's see what happens when the doors give us hints!" },
-      { text: 'I went door by door from one end.',          coach: "Smart! That's called a LINEAR SEARCH. It always works — but it can take a lot of moves." },
-      { text: 'I picked the middle and worked outward.',    coach: "Interesting! Position-based strategies become much more powerful when you have clues. Coming up next..." },
-    ],
-  },
-  2: {
-    q: 'When the door said COLD, what did you do?',
-    options: [
-      { text: 'I tried a door far away from that one.',     coach: "Exactly! Cold means 'far' — so jumping somewhere new is way faster than checking the next door." },
-      { text: 'I tried the door right next to it.',         coach: 'Hmm — when a door is COLD, the treasure is FAR away. Skipping further next time will save moves!' },
-      { text: 'I ignored the clue.',                        coach: 'The clues are everything! Each one cuts the maze in half. Try listening next round.' },
-    ],
-  },
-  3: {
-    q: 'When the ghost said "treasure is to the LEFT", you knew...',
-    options: [
-      { text: 'every door to the right could be ignored.',  coach: "💡 That's the BIG idea: one clue eliminates HALF the doors. That's BINARY SEARCH!" },
-      { text: 'to try the door right next to it.',          coach: "You can do better. The clue tells you EVERY door on the wrong side is wrong — skip them all!" },
-      { text: 'to check every door to the left in order.',  coach: 'Try this: pick the MIDDLE of the remaining doors. One clue, half eliminated. Repeat. That is binary search!' },
-    ],
-  },
-  4: {
-    q: 'How did you survive the move limit?',
-    options: [
-      { text: 'I always picked the middle of what was left.', coach: '🎯 You used BINARY SEARCH. Every guess cut the problem in half — that\'s why 5 moves can solve 20 (or 1000!) doors.' },
-      { text: 'I tried doors near my last guess.',            coach: 'Close! The trick is to pick the MIDDLE of what\'s left, not just nearby. That doubles your speed.' },
-      { text: 'I got lucky.',                                  coach: 'Try again! Aim for the middle of the remaining doors each time. With clues, you can ALWAYS finish in 5 or fewer.' },
-    ],
-  },
-};
-
-function Stars({ count }) {
+function CriteriaStars({ criteria, maxStars, earned }) {
   return (
-    <div className="stars" aria-label={`${count} of 3 stars`}>
-      {[0, 1, 2].map((i) => (
-        <span key={i} className={'stars__one' + (i < count ? '' : ' stars__one--off')}>★</span>
-      ))}
+    <div className="criteria">
+      <div className="criteria__total">
+        {Array.from({ length: maxStars }).map((_, i) => (
+          <span key={i} className={'criteria__star' + (i < earned ? '' : ' criteria__star--off')}>★</span>
+        ))}
+      </div>
+      <div className="criteria__rows">
+        {criteria.map((c, i) => (
+          <div key={i} className={'criteria__row' + (c.earned ? ' criteria__row--earned' : ' criteria__row--missed')}>
+            <span className="criteria__icon" aria-hidden="true">{c.earned ? '⭐' : '☆'}</span>
+            <div className="criteria__text">
+              <span className="criteria__label">{c.label}</span>
+              {c.note && <span className="criteria__note">{c.note}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -76,19 +52,17 @@ function Path({ attempts, treasureIndex, doorCount }) {
   );
 }
 
-export default function LevelComplete({ result, hasNext, isCustom, onNext, onReplay, onMenu }) {
-  const { level, attempts, treasureIndex, status, stars } = result;
-  const [picked, setPicked] = useState(null);
-  // Custom levels have no reflection prompt.
-  const reflection = isCustom ? null : REFLECTIONS[level.id];
-
+export default function LevelComplete({ result, hasNext, isCustom, onNext, onReplay, onMenu, onJournalAdd, onJournalOpen, journalCount }) {
+  const { level, attempts, treasureIndex, status } = result;
+  const { stars, maxStars, criteria } = computeStarsAdvanced(attempts, level, status);
   const won = status === 'won';
 
   return (
     <div className="complete">
       <div className="complete__banner">{won ? '~ level complete ~' : '~ out of moves ~'}</div>
       <h2 className="complete__title">{won ? 'You found it!' : 'So close!'}</h2>
-      <Stars count={stars} />
+
+      <CriteriaStars criteria={criteria} maxStars={maxStars} earned={stars} />
 
       <div className="summary">
         {isCustom && level.code && (
@@ -111,32 +85,22 @@ export default function LevelComplete({ result, hasNext, isCustom, onNext, onRep
             <strong>{level.moveLimit}</strong>
           </div>
         )}
-        <div className="summary__row">
-          <span>Best possible</span>
-          <strong>{level.perfectMoves} {level.perfectMoves === 1 ? 'move' : 'moves'}</strong>
-        </div>
       </div>
 
       <Path attempts={attempts} treasureIndex={treasureIndex} doorCount={level.doorCount} />
 
-      {reflection && (
-        <div className="reflect">
-          <div className="reflect__q">{reflection.q}</div>
-          <div className="reflect__opts">
-            {reflection.options.map((opt, i) => (
-              <button
-                key={i}
-                className={'reflect__opt' + (picked === i ? ' reflect__opt--picked' : '')}
-                onClick={() => setPicked(i)}
-              >
-                {opt.text}
-              </button>
-            ))}
-          </div>
-          {picked !== null && (
-            <div className="reflect__hint">{reflection.options[picked].coach}</div>
-          )}
-        </div>
+      {won && !isCustom && (
+        <StrategyBuilder
+          levelId={level.id}
+          levelName={level.name}
+          onSave={onJournalAdd}
+        />
+      )}
+
+      {journalCount > 0 && (
+        <button className="btn btn--ghost complete__journal-btn" onClick={onJournalOpen}>
+          📓 View Strategy Journal ({journalCount} {journalCount === 1 ? 'entry' : 'entries'})
+        </button>
       )}
 
       <div className="complete__actions">

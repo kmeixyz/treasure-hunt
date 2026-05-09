@@ -8,6 +8,7 @@ import GameComplete from '@/components/GameComplete';
 import Level6Choice from '@/components/Level6Choice';
 import MakerFlow from '@/components/MakerFlow';
 import JoinFlow from '@/components/JoinFlow';
+import StrategyJournal from '@/components/StrategyJournal';
 import { LEVELS } from '@/lib/levels';
 
 const SCREENS = {
@@ -26,6 +27,10 @@ export default function Page() {
   const [customLevel, setCustomLevel] = useState(null);
   const [lastResult, setLastResult] = useState(null);
   const [progress, setProgress] = useState({});
+
+  // Journal state
+  const [journal, setJournal] = useState([]);
+  const [journalOpen, setJournalOpen] = useState(false);
 
   const handleStart = useCallback((id) => {
     setCustomLevel(null);
@@ -66,6 +71,10 @@ export default function Page() {
     setScreen(SCREENS.START);
   }, []);
 
+  const handleJournalAdd = useCallback((entry) => {
+    setJournal((prev) => [...prev, entry]);
+  }, []);
+
   const isCustomGame = customLevel !== null;
 
   return (
@@ -101,6 +110,8 @@ export default function Page() {
           levelConfig={isCustomGame ? customLevel : undefined}
           onComplete={handleLevelDone}
           onBack={handleBackToMenu}
+          onJournalOpen={() => setJournalOpen(true)}
+          journalCount={journal.length}
         />
       )}
 
@@ -115,11 +126,18 @@ export default function Page() {
           onNext={handleNext}
           onReplay={handleReplay}
           onMenu={handleBackToMenu}
+          onJournalAdd={handleJournalAdd}
+          onJournalOpen={() => setJournalOpen(true)}
+          journalCount={journal.length}
         />
       )}
 
       {screen === SCREENS.FINISHED && (
         <GameComplete progress={progress} onMenu={handleBackToMenu} />
+      )}
+
+      {journalOpen && (
+        <StrategyJournal entries={journal} onClose={() => setJournalOpen(false)} />
       )}
     </main>
   );

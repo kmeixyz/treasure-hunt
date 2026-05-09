@@ -53,7 +53,7 @@ export default function StartScreen({ onStart, progress, onLevel6 }) {
               <div className="level-card__sub">{level.subtitle}</div>
               {locked
                 ? <div className="level-card__lock" aria-label="Locked">🔒</div>
-                : <Stars count={earned} />}
+                : <Stars count={earned} max={level.maxStars ?? 3} />}
             </button>
           );
         })}
