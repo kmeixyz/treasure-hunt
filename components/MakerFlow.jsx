@@ -11,17 +11,41 @@ const DOOR_MIN = 5;
 const DOOR_MAX = 500;
 
 function StepScale({ doorCount, onChange }) {
-  const perfect = minMoves(doorCount);
-  const overLimit = doorCount > DOOR_MAX;
-  const underLimit = doorCount < DOOR_MIN;
+  const [rawInput, setRawInput] = useState(String(doorCount));
 
+  // Keep rawInput in sync when slider changes doorCount externally.
   function handleSlider(e) {
-    onChange(Number(e.target.value));
+    const v = Number(e.target.value);
+    onChange(v);
+    setRawInput(String(v));
   }
+
   function handleInput(e) {
-    const v = parseInt(e.target.value, 10);
-    if (!isNaN(v)) onChange(Math.max(1, v)); // allow typing freely; clamp only on Next
+    const raw = e.target.value;
+    setRawInput(raw);
+    if (raw === '') return; // allow empty while typing
+    const v = parseInt(raw, 10);
+    if (!isNaN(v)) onChange(v);
   }
+
+  // Clamp to valid range when the field loses focus.
+  function handleBlur() {
+    const v = parseInt(rawInput, 10);
+    if (isNaN(v) || rawInput === '') {
+      setRawInput(String(doorCount)); // revert to last valid value
+    } else {
+      const clamped = Math.max(DOOR_MIN, Math.min(DOOR_MAX, v));
+      onChange(clamped);
+      setRawInput(String(clamped));
+    }
+  }
+
+  const parsed = parseInt(rawInput, 10);
+  const isEmpty = rawInput === '';
+  const overLimit = !isEmpty && !isNaN(parsed) && parsed > DOOR_MAX;
+  const underLimit = !isEmpty && !isNaN(parsed) && parsed < DOOR_MIN;
+  const invalid = isEmpty || isNaN(parsed) || overLimit || underLimit;
+  const perfect = !invalid ? minMoves(parsed) : null;
 
   return (
     <div className="maker__step-body">
@@ -49,10 +73,11 @@ function StepScale({ doorCount, onChange }) {
           type="number"
           min={DOOR_MIN}
           max={DOOR_MAX}
-          value={doorCount}
+          value={rawInput}
           onChange={handleInput}
-          className={'maker__number-input' + (overLimit || underLimit ? ' maker__number-input--error' : '')}
-          aria-invalid={overLimit || underLimit}
+          onBlur={handleBlur}
+          className={'maker__number-input' + (invalid ? ' maker__number-input--error' : '')}
+          aria-invalid={invalid}
         />
       </div>
 
@@ -63,9 +88,9 @@ function StepScale({ doorCount, onChange }) {
         <p className="maker__field-error">Minimum is {DOOR_MIN} doors.</p>
       )}
 
-      {!overLimit && !underLimit && (
+      {!invalid && (
         <div className="maker__math-hint">
-          💡 A master hunter needs at least <strong>{perfect} move{perfect !== 1 ? 's' : ''}</strong> for {doorCount} door{doorCount !== 1 ? 's' : ''} using binary search.
+          💡 A master hunter needs at least <strong>{perfect} move{perfect !== 1 ? 's' : ''}</strong> for {parsed} door{parsed !== 1 ? 's' : ''} using binary search.
         </div>
       )}
     </div>

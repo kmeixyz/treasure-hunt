@@ -133,7 +133,12 @@ export default function Page() {
       )}
 
       {screen === SCREENS.FINISHED && (
-        <GameComplete progress={progress} onMenu={handleBackToMenu} />
+        <GameComplete
+          progress={progress}
+          onMenu={handleBackToMenu}
+          onMaker={() => setScreen(SCREENS.MAKER)}
+          onRetry={(id) => { setCustomLevel(null); setActiveLevelId(id); setScreen(SCREENS.GAME); }}
+        />
       )}
 
       {journalOpen && (
