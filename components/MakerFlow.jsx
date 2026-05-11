@@ -277,6 +277,8 @@ export default function MakerFlow({ onPlay, onBack }) {
   const [hasLimit, setHasLimit] = useState(false);
   const [moveLimit, setMoveLimit] = useState(minMoves(20));
   const [code, setCode] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   // When doorCount changes, keep moveLimit in sync with the new perfect value.
   function handleDoorCount(n) {
@@ -290,9 +292,16 @@ export default function MakerFlow({ onPlay, onBack }) {
       return;
     }
     // Last "Next" — save and reveal code.
+    setSaving(true);
+    setSaveError(null);
     const newCode = generateCode();
     const config = encodeConfig({ doorCount, treasureMode, treasureDoor, feedbackType, hasLimit, moveLimit });
-    await saveLevel(newCode, config);
+    const result = await saveLevel(newCode, config);
+    setSaving(false);
+    if (!result.ok) {
+      setSaveError('Could not save your level. Please try again.');
+      return;
+    }
     setCode(newCode);
     setStep(STEPS.length - 1);
   }, [step, doorCount, treasureMode, treasureDoor, feedbackType, hasLimit, moveLimit]);
@@ -360,16 +369,17 @@ export default function MakerFlow({ onPlay, onBack }) {
       {step < STEPS.length - 1 && (
         <div className="maker__nav">
           {step > 0 && (
-            <button className="btn btn--ghost" onClick={() => setStep((s) => s - 1)}>
+            <button className="btn btn--ghost" onClick={() => setStep((s) => s - 1)} disabled={saving}>
               ← Back
             </button>
           )}
+          {saveError && <p className="maker__error">{saveError}</p>}
           <button
             className="btn btn--gold"
             onClick={handleNext}
-            disabled={step === 0 && (doorCount < DOOR_MIN || doorCount > DOOR_MAX)}
+            disabled={saving || (step === 0 && (doorCount < DOOR_MIN || doorCount > DOOR_MAX))}
           >
-            {step === lastDataStep ? 'Generate Code →' : 'Next →'}
+            {saving ? 'Saving…' : step === lastDataStep ? 'Generate Code →' : 'Next →'}
           </button>
         </div>
       )}

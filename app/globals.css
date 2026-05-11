@@ -1267,6 +1267,15 @@ h1, h2, h3 { font-family: 'Lilita One', sans-serif; font-weight: 400; letter-spa
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.maker__error {
+  width: 100%;
+  text-align: center;
+  color: var(--coral-deep);
+  font-size: 0.88rem;
+  margin: 0;
 }
 
 /* ==========================================================================
