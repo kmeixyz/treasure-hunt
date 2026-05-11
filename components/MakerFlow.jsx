@@ -92,7 +92,7 @@ function StepTreasure({ doorCount, treasureMode, treasureDoor, onModeChange, onD
           onChange={() => onModeChange('random')}
         />
         <span className="maker__radio-label">
-          🎲 <strong>Randomize</strong> — different spot every game <span className="maker__badge">Recommended</span>
+          🎲 <strong>Randomize</strong> — different door every game <span className="maker__badge">Recommended</span>
         </span>
       </label>
 
@@ -139,7 +139,7 @@ const CLUE_OPTIONS = [
     value: 'distance',
     emoji: '🌡️',
     label: 'Hot or Cold',
-    desc: 'Ghost whispers how close you are. Teaches proximity search.',
+    desc: 'Ghost whispers how close you are.',
   },
   {
     value: 'none',

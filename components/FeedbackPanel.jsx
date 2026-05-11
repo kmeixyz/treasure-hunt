@@ -41,7 +41,7 @@ export default function FeedbackPanel({ feedback, level }) {
         <div className="feedback__emoji" aria-hidden="true">💎</div>
         <div className="feedback__text">
           <div className="feedback__label">YOU FOUND IT!</div>
-          <div className="feedback__detail">the gold is yours, brave hunter</div>
+          <div className="feedback__detail">The treasure is yours, smart hunter</div>
         </div>
       </div>
     );

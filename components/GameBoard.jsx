@@ -37,7 +37,7 @@ function reducer(state, action) {
       const triedSet = new Set(Object.keys(state.tried).map(Number));
       const treasureIndex = relocateTreasureIfNeeded(
         state.level, doorIndex, state.treasureIndex, triedSet,
-        state.attempts.length, state.searchBounds
+        state.attempts.length, state.searchBounds, state.attempts
       );
       const feedback = computeFeedback(state.level, doorIndex, treasureIndex);
       const attempt = { doorIndex, feedback };

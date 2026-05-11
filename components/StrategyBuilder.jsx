@@ -21,7 +21,7 @@ const WHY_OPTIONS = [
 
 const EVAL_OPTIONS = [
   { value: 'really well',          label: 'really well' },
-  { value: 'okay, but it was slow', label: 'okay, but it was slow' },
+  { value: 'okay',                  label: 'okay' },
   { value: 'terribly',             label: 'terribly' },
 ];
 
